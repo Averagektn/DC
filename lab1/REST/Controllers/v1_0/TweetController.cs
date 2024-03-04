@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace REST.Controllers.v1_0
+namespace REST.Controllers.V1_0
 {
     public class TweetController(ILogger logger) : Controller
     {
