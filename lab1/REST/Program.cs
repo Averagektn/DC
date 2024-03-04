@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using REST.Service.Implementation;
 using REST.Service.Interface;
 using REST.Storage;

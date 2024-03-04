@@ -2,7 +2,7 @@
 
 namespace REST.Controllers.V1_0
 {
-    public class AuthorController(ILogger logger) : Controller
+    public class TweetController(ILogger logger) : Controller
     {
         private readonly ILogger _logger = logger;
 
