@@ -6,7 +6,8 @@ using REST.Storage.InMemoryDb;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
-builder.Services.AddDbContext<DbStorage, InMemoryDbContext>();
+//builder.Services.AddDbContext<DbStorage, InMemoryDbContext>();
+builder.Services.AddSingleton<DbStorage, InMemoryDbContext>();
 builder.Services
     .AddScoped<IAuthorService, AuthorService>()
     .AddScoped<IMarkerService, MarkerService>()

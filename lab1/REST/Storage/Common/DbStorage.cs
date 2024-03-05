@@ -10,16 +10,8 @@ namespace REST.Storage.Common
         public DbSet<Post> Posts { get; set; }
         public DbSet<Tweet> Tweets { get; set; }
 
-        public DbStorage()
-        {
-            Database.EnsureCreated();
-            Database.EnsureDeleted();
-        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
-
             modelBuilder.Entity<Author>().HasKey(a => a.Id);
             modelBuilder.Entity<Author>().Property(a => a.Id).ValueGeneratedOnAdd();
             modelBuilder.Entity<Author>().Property(a => a.Password).IsRequired().HasMaxLength(128);
@@ -45,6 +37,8 @@ namespace REST.Storage.Common
             modelBuilder.Entity<Post>().Property(p => p.Id).ValueGeneratedOnAdd();
             modelBuilder.Entity<Post>().Property(p => p.Content).IsRequired().HasMaxLength(2048);
             modelBuilder.Entity<Post>().Property(p => p.TweetId).IsRequired();
+
+            base.OnModelCreating(modelBuilder);
         }
     }
 }
