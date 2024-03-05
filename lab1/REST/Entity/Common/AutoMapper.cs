@@ -9,13 +9,13 @@ namespace REST.Entity.Common
     {
         public AutoMapper() 
         {
-            CreateMap<Author, AuthorRequestTO>();
+            CreateMap<AuthorRequestTO, Author>();
             CreateMap<Author, AuthorResponseTO>();
-            CreateMap<Marker, MarkerRequestTO>();
+            CreateMap<MarkerRequestTO, Marker>();
             CreateMap<Marker, MarkerResponseTO>();
-            CreateMap<Post, PostRequestTO>();
+            CreateMap<PostRequestTO, Post>();
             CreateMap<Post, PostResponseTO>();
-            CreateMap<Tweet,  TweetRequestTO>();
+            CreateMap<TweetRequestTO, Tweet>();
             CreateMap<Tweet, TweetResponseTO>();
         }
     }

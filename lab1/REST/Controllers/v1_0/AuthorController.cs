@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using REST.Entity.DTO.RequestTO;
+using REST.Entity.DTO.ResponseTO;
 using REST.Service.Interface;
 
 namespace REST.Controllers.V1_0
@@ -9,20 +10,23 @@ namespace REST.Controllers.V1_0
     public class AuthorController(ILogger<AuthorController> Logger, IAuthorService AuthorService) : Controller
     {
         [HttpGet]
-        public async Task<JsonResult> Read()
+        public JsonResult Read()
         {
             var authors = AuthorService.GetAuthors();
 
-            var a = Json(authors);
+            Logger.LogInformation("Authors read");
 
             return Json(authors);
         }
 
         [HttpPost]
-        [Route("add")]
-        public async Task<IActionResult> Create(AuthorRequestTO author)
+        public IActionResult Create([FromBody] AuthorRequestTO authorRequest)
         {
-            throw new NotImplementedException();
+            var res = AuthorService.AddAuthor(authorRequest);
+
+            Logger.LogInformation("Creating {res}", res);
+
+            return res ? Ok() : BadRequest();
         }
 
         [HttpPut]
