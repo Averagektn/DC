@@ -1,3 +1,4 @@
+using REST.Middleware;
 using REST.Service.Implementation;
 using REST.Service.Interface;
 using REST.Storage;
@@ -14,5 +15,6 @@ builder.Services
 
 
 var app = builder.Build();
+app.UseURLLog();
 app.MapControllers();
 app.Run();
