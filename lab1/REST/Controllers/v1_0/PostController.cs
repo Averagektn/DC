@@ -2,10 +2,9 @@
 
 namespace REST.Controllers.V1_0
 {
-    public class PostController(ILogger logger) : Controller
+    [Route("/api/v1.0/posts")]
+    public class PostController(ILogger<PostController> Logger) : Controller
     {
-        private readonly ILogger _logger = logger;
-
         public IActionResult Index()
         {
             return View();
