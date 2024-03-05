@@ -1,15 +1,10 @@
 ﻿using REST.Service.Interface;
-using REST.Storage;
+using REST.Storage.Common;
 
 namespace REST.Service.Implementation
 {
-    public class MarkerService : IMarkerService
+    public class MarkerService(IServiceProvider serviceProvider) : IMarkerService
     {
-        private readonly DbStorage _context;
-
-        public MarkerService(IServiceProvider serviceProvider)
-        {
-            _context = serviceProvider.GetRequiredService<DbStorage>();
-        }
+        private readonly DbStorage _context = serviceProvider.GetRequiredService<DbStorage>();
     }
 }

@@ -2,7 +2,7 @@
 {
     public class LogURLMiddleware(RequestDelegate Next, ILogger<LogURLMiddleware> Logger)
     {
-        public async Task Invoke(HttpContext context)
+        public async Task InvokeAsync(HttpContext context)
         {
             Logger.LogInformation("{Context.Request.Path}", context.Request.Path);
             await Next(context);

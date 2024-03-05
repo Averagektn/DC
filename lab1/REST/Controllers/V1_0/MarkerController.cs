@@ -2,10 +2,9 @@
 
 namespace REST.Controllers.V1_0
 {
-    public class MarkerController(ILogger logger) : Controller
+    [Route("/api/v1.0/markers")]
+    public class MarkerController(ILogger<MarkerController> Logger) : Controller
     {
-        private readonly ILogger _logger = logger;
-
         public IActionResult Index()
         {
             return View();

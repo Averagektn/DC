@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using REST.Storage.Common;
 
 namespace REST.Storage.InMemoryDb
 {

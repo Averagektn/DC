@@ -1,15 +1,10 @@
 ﻿using REST.Service.Interface;
-using REST.Storage;
+using REST.Storage.Common;
 
 namespace REST.Service.Implementation
 {
-    public class TweetService : ITweetService
+    public class TweetService(IServiceProvider serviceProvider) : ITweetService
     {
-        private readonly DbStorage _context;
-
-        public TweetService(IServiceProvider serviceProvider)
-        {
-            _context = serviceProvider.GetRequiredService<DbStorage>();
-        }
+        private readonly DbStorage _context = serviceProvider.GetRequiredService<DbStorage>();
     }
 }
