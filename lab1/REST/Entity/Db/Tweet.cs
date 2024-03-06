@@ -17,7 +17,7 @@ namespace REST.Entity.Db
         public Author Author { get; set; } = null!;
 
         public Tweet() : this(string.Empty, string.Empty, DateTime.Now, DateTime.Now) { }
-        public Tweet(int id, int authorId, string title, string content, DateTime created, DateTime modified) 
+        public Tweet(int id, int authorId, string title, string content, DateTime created, DateTime modified)
             : this(title, content, created, modified)
         {
             Id = id;

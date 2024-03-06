@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace REST.Entity.Common
+﻿namespace REST.Entity.Common
 {
     public abstract class AbstractEntity
     {

@@ -6,10 +6,8 @@ using REST.Storage.InMemoryDb;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
-
 builder.Services.AddDbContext<DbStorage, InMemoryDbContext>();
 builder.Services.AddControllers().AddNewtonsoftJson();
-
 builder.Services
     .AddScoped<IAuthorService, AuthorService>()
     .AddScoped<IMarkerService, MarkerService>()

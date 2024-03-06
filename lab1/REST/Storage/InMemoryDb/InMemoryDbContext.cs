@@ -7,7 +7,7 @@ namespace REST.Storage.InMemoryDb
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("DataSource=file::memory:?cache=shared");   
+            optionsBuilder.UseSqlite("DataSource=file::memory:?cache=shared");
         }
     }
 }

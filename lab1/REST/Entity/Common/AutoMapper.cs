@@ -7,7 +7,7 @@ namespace REST.Entity.Common
 {
     public class AutoMapper : Profile
     {
-        public AutoMapper() 
+        public AutoMapper()
         {
             CreateMap<AuthorRequestTO, Author>();
             CreateMap<Author, AuthorResponseTO>();

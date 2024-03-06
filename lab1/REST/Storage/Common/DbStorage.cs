@@ -10,8 +10,8 @@ namespace REST.Storage.Common
         public DbSet<Post> Posts { get; set; }
         public DbSet<Tweet> Tweets { get; set; }
 
-        public DbStorage() 
-        { 
+        public DbStorage()
+        {
             Database.EnsureCreated();
             Database.EnsureDeleted();
         }
