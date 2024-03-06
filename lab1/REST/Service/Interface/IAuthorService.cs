@@ -7,7 +7,7 @@ namespace REST.Service.Interface
     {
         IList<AuthorResponseTO> GetAuthors();
         bool AddAuthor(AuthorRequestTO author);
-        bool RemoveAuthor(AuthorRequestTO author);
+        bool RemoveAuthor(int id);
         bool UpdateAuthor(AuthorRequestTO author);
     }
 }

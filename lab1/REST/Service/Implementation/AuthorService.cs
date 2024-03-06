@@ -46,14 +46,41 @@ namespace REST.Service.Implementation
             return res;
         }
 
-        public bool RemoveAuthor(AuthorRequestTO author)
+        public bool RemoveAuthor(int id)
         {
-            throw new NotImplementedException();
+            var a = new Author() { Id = id };
+
+            try
+            {
+                _context.Remove(a);
+                _context.SaveChanges(); 
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
         }
 
         public bool UpdateAuthor(AuthorRequestTO author)
         {
-            throw new NotImplementedException();
+            var a = _mapper.Map<Author>(author);
+
+            if (!Validate(a))
+            {
+                return false;
+            }
+
+            try
+            {
+                _context.Update(a);
+                _context.SaveChanges();
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
         }
 
         protected bool Validate(Author author)

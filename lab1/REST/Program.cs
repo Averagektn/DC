@@ -1,13 +1,18 @@
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using REST.Middleware;
 using REST.Service.Implementation;
 using REST.Service.Interface;
 using REST.Storage.Common;
 using REST.Storage.InMemoryDb;
+using System.Data.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
-//builder.Services.AddDbContext<DbStorage, InMemoryDbContext>();
-builder.Services.AddSingleton<DbStorage, InMemoryDbContext>();
+
+builder.Services.AddDbContext<DbStorage, InMemoryDbContext>();
+//builder.Services.AddSingleton<DbStorage, InMemoryDbContext>();
+
 builder.Services
     .AddScoped<IAuthorService, AuthorService>()
     .AddScoped<IMarkerService, MarkerService>()

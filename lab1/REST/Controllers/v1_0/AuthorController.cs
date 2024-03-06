@@ -20,25 +20,33 @@ namespace REST.Controllers.V1_0
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] AuthorRequestTO authorRequest)
+        public IActionResult Create([FromBody] AuthorRequestTO author)
         {
-            var res = AuthorService.AddAuthor(authorRequest);
+            var res = AuthorService.AddAuthor(author);
 
-            Logger.LogInformation("Creating {res}", res);
+            Logger.LogInformation("Creating {res}", Json(author).Value);
 
             return res ? Ok() : BadRequest();
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update(AuthorRequestTO author)
+        public IActionResult Update([FromBody] AuthorRequestTO author)
         {
-            throw new NotImplementedException();
+            var res = AuthorService.UpdateAuthor(author);
+
+            Logger.LogInformation("Updated author: {author}", Json(author).Value);
+
+            return res ? Ok() : BadRequest();
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Delete(AuthorRequestTO author)
+        public IActionResult Delete([FromBody] int id)
         {
-            throw new NotImplementedException();
+            var res = AuthorService.RemoveAuthor(id);
+
+            Logger.LogInformation("Deleted {author}", Json(author).Value);
+
+            return res ? Ok() : BadRequest();
         }
     }
 }
