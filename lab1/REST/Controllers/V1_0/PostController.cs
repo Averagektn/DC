@@ -2,12 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using REST.Entity.Db;
 using REST.Entity.DTO.RequestTO;
-using REST.Service.Implementation;
 using REST.Service.Interface;
 
 namespace REST.Controllers.V1_0
 {
-    [Route("/api/v1.0/posts")]
+    [Route("api/v1.0/posts")]
+    [ApiController]
     public class PostController(ILogger<PostController> Logger, IPostService PostService) : Controller
     {
         [HttpGet]

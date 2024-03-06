@@ -8,7 +8,7 @@ namespace REST.Entity.Db
         public int AuthorId { get; set; }
         [MinLength(2)]
         public string Title { get; set; } = title;
-        [MinLength(2)]
+        [MinLength(4)]
         public string Content { get; set; } = content;
         public DateTime Created { get; set; } = created;
         public DateTime Modified { get; set; } = modified;

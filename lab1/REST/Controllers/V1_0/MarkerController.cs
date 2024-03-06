@@ -6,7 +6,8 @@ using REST.Service.Interface;
 
 namespace REST.Controllers.V1_0
 {
-    [Route("/api/v1.0/markers")]
+    [Route("api/v1.0/markers")]
+    [ApiController]
     public class MarkerController(ILogger<MarkerController> Logger, IMarkerService MarkerService) : Controller
     {
         [HttpGet]

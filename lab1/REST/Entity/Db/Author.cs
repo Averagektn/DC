@@ -7,7 +7,7 @@ namespace REST.Entity.Db
     {
         [MinLength(2)]
         public string Login { get; set; } = login;
-        [MinLength(2)]
+        [MinLength(8)]
         public string Password { get; set; } = password;
         [MinLength(2)]
         public string FirstName { get; set; } = firstName;

@@ -17,6 +17,11 @@ namespace REST.Service.Implementation
         {
             var m = _mapper.Map<Marker>(marker);
 
+            if (!Validate(m))
+            {
+                return false;
+            }
+
             try
             {
                 _context.Markers.Add(m);
@@ -103,7 +108,7 @@ namespace REST.Service.Implementation
         {
             var nameLen = marker.Name.Length;
 
-            if (nameLen < 2 || nameLen > 64)
+            if (nameLen < 2 || nameLen > 32)
             {
                 return false;
             }

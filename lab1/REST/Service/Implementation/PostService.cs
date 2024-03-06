@@ -13,29 +13,106 @@ namespace REST.Service.Implementation
         private readonly DbStorage _context = serviceProvider.GetRequiredService<DbStorage>();
         private readonly IMapper _mapper = mapper;
 
-        public Task<bool> Add(PostRequestTO author)
+        public async Task<bool> Add(PostRequestTO post)
         {
-            throw new NotImplementedException();
+            var p = _mapper.Map<Post>(post);
+
+            if (!Validate(p))
+            {
+                return false;
+            }
+
+            try
+            {
+                _context.Posts.Add(p);
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
         }
 
         public IList<PostResponseTO> GetAll()
         {
-            throw new NotImplementedException();
+            var res = new List<PostResponseTO>();
+
+            foreach (var p in _context.Posts)
+            {
+                res.Add(_mapper.Map<PostResponseTO>(p));
+            }
+
+            return res;
         }
 
-        public Task<bool> Patch(int id, JsonPatchDocument<Post> patch)
+        public async Task<bool> Patch(int id, JsonPatchDocument<Post> patch)
         {
-            throw new NotImplementedException();
+            var target = _context.Find<Post>(id);
+            if (target is null)
+            {
+                return false;
+            }
+
+            try
+            {
+                patch.ApplyTo(target);
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
         }
 
-        public Task<bool> Remove(int id)
+        public async Task<bool> Remove(int id)
         {
-            throw new NotImplementedException();
+            var target = new Post() { Id = id };
+
+            try
+            {
+                _context.Remove(target);
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
         }
 
-        public Task<bool> Update(PostRequestTO author)
+        public async Task<bool> Update(PostRequestTO post)
         {
-            throw new NotImplementedException();
+            var p = _mapper.Map<Post>(post);
+
+            if (!Validate(p))
+            {
+                return false;
+            }
+
+            try
+            {
+                _context.Update(p);
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
+        }
+
+        private static bool Validate(Post post)
+        {
+            var contentLen = post.Content.Length;
+
+            if (contentLen < 2 || contentLen > 2048)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }
