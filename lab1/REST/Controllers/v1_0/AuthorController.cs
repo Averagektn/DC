@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
+using REST.Entity.Db;
 using REST.Entity.DTO.RequestTO;
-using REST.Entity.DTO.ResponseTO;
 using REST.Service.Interface;
 
 namespace REST.Controllers.V1_0
@@ -20,33 +21,45 @@ namespace REST.Controllers.V1_0
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] AuthorRequestTO author)
+        public async Task<IActionResult> Create([FromBody] AuthorRequestTO author)
         {
             var res = AuthorService.AddAuthor(author);
 
             Logger.LogInformation("Creating {res}", Json(author).Value);
 
-            return res ? Ok() : BadRequest();
+            return await res ? Ok() : BadRequest();
         }
 
         [HttpPut]
-        public IActionResult Update([FromBody] AuthorRequestTO author)
+        public async Task<IActionResult> Update([FromBody] AuthorRequestTO author)
         {
             var res = AuthorService.UpdateAuthor(author);
 
             Logger.LogInformation("Updated author: {author}", Json(author).Value);
 
-            return res ? Ok() : BadRequest();
+            return await res ? Ok() : BadRequest();
+        }
+
+        [HttpPatch]
+        [Route("{id:int}")]
+        public async Task<IActionResult> PartialUpdate([FromRoute] int id, [FromBody] JsonPatchDocument<Author> author)
+        {
+            var res = AuthorService.Patch(id, author);
+
+            Logger.LogInformation("Patched {author}", author);
+
+            return await res ? Ok() : BadRequest();
         }
 
         [HttpDelete]
-        public IActionResult Delete([FromBody] int id)
+        [Route("{id:int}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var res = AuthorService.RemoveAuthor(id);
 
-            Logger.LogInformation("Deleted {author}", Json(author).Value);
+            Logger.LogInformation("Deleted {id}", id);
 
-            return res ? Ok() : BadRequest();
+            return await res ? Ok() : BadRequest();
         }
     }
 }

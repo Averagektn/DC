@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
 using REST.Entity.Db;
 using REST.Entity.DTO.RequestTO;
 using REST.Entity.DTO.ResponseTO;
@@ -12,7 +13,7 @@ namespace REST.Service.Implementation
         private readonly DbStorage _context = serviceProvider.GetRequiredService<DbStorage>();
         private readonly IMapper _mapper = mapper;
 
-        public bool AddAuthor(AuthorRequestTO author)
+        public async Task<bool> AddAuthor(AuthorRequestTO author)
         {
             var a = _mapper.Map<Author>(author);
 
@@ -24,9 +25,9 @@ namespace REST.Service.Implementation
             try
             {
                 _context.Add(a);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
-            catch (Exception)
+            catch
             {
                 return false;
             }
@@ -46,14 +47,36 @@ namespace REST.Service.Implementation
             return res;
         }
 
-        public bool RemoveAuthor(int id)
+        public async Task<bool> Patch(int id, JsonPatchDocument<Author> patch)
+        {
+            try
+            {
+                var author = await _context.FindAsync<Author>(id);
+
+                if (author is null)
+                {
+                    return false;
+                }
+
+                patch.ApplyTo(author);
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public async Task<bool> RemoveAuthor(int id)
         {
             var a = new Author() { Id = id };
 
             try
             {
                 _context.Remove(a);
-                _context.SaveChanges(); 
+                await _context.SaveChangesAsync();
             }
             catch
             {
@@ -62,7 +85,7 @@ namespace REST.Service.Implementation
             return true;
         }
 
-        public bool UpdateAuthor(AuthorRequestTO author)
+        public async Task<bool> UpdateAuthor(AuthorRequestTO author)
         {
             var a = _mapper.Map<Author>(author);
 
@@ -74,7 +97,7 @@ namespace REST.Service.Implementation
             try
             {
                 _context.Update(a);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch
             {
