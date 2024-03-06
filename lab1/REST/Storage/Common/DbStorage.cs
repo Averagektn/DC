@@ -33,7 +33,6 @@ namespace REST.Storage.Common
                 entity.Property(a => a.Login).IsRequired().HasMaxLength(64).IsUnicode();
 
                 entity.HasIndex(a => a.Login).IsUnique();
-                entity.HasAlternateKey(a => a.Login);
 
                 entity.HasMany(a => a.Tweets).WithOne(t => t.Author);
             });
@@ -65,7 +64,6 @@ namespace REST.Storage.Common
                 entity.Property(t => t.Title).IsRequired().HasMaxLength(64);
 
                 entity.HasIndex(t => t.Title).IsUnique();
-                entity.HasAlternateKey(t => t.Title);
             });
 
             modelBuilder.Entity<Marker>(entity =>
@@ -77,7 +75,6 @@ namespace REST.Storage.Common
                 entity.Property(m => m.Name).IsRequired().HasMaxLength(32);
 
                 entity.HasIndex(m => m.Name).IsUnique();
-                entity.HasAlternateKey(m => m.Name);
 
                 entity.HasMany(m => m.Tweets).WithMany(t => t.Markers);
             });
