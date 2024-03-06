@@ -8,9 +8,9 @@ namespace REST.Service.Interface
     public interface IAuthorService
     {
         Task<bool> Patch(int id, JsonPatchDocument<Author> patch);
-        IList<AuthorResponseTO> GetAuthors();
-        Task<bool> AddAuthor(AuthorRequestTO author);
-        Task<bool> RemoveAuthor(int id);
-        Task<bool> UpdateAuthor(AuthorRequestTO author);
+        IList<AuthorResponseTO> GetAll();
+        Task<bool> Add(AuthorRequestTO author);
+        Task<bool> Remove(int id);
+        Task<bool> Update(AuthorRequestTO author);
     }
 }

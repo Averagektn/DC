@@ -13,7 +13,7 @@ namespace REST.Controllers.V1_0
         [HttpGet]
         public JsonResult Read()
         {
-            var authors = AuthorService.GetAuthors();
+            var authors = AuthorService.GetAll();
 
             Logger.LogInformation("Authors read");
 
@@ -23,17 +23,17 @@ namespace REST.Controllers.V1_0
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] AuthorRequestTO author)
         {
-            var res = AuthorService.AddAuthor(author);
+            var res = AuthorService.Add(author);
 
             Logger.LogInformation("Creating {res}", Json(author).Value);
 
-            return await res ? Ok() : BadRequest();
+            return await res ? Created() : BadRequest();
         }
 
         [HttpPut]
         public async Task<IActionResult> Update([FromBody] AuthorRequestTO author)
         {
-            var res = AuthorService.UpdateAuthor(author);
+            var res = AuthorService.Update(author);
 
             Logger.LogInformation("Updated author: {author}", Json(author).Value);
 
@@ -55,7 +55,7 @@ namespace REST.Controllers.V1_0
         [Route("{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            var res = AuthorService.RemoveAuthor(id);
+            var res = AuthorService.Remove(id);
 
             Logger.LogInformation("Deleted {id}", id);
 

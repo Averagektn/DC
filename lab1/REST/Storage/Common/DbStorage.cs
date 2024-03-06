@@ -34,6 +34,8 @@ namespace REST.Storage.Common
 
                 entity.HasIndex(a => a.Login).IsUnique();
                 entity.HasAlternateKey(a => a.Login);
+
+                entity.HasMany(a => a.Tweets).WithOne(t => t.Author);
             });
 
             modelBuilder.Entity<Post>((entity) =>
@@ -45,6 +47,8 @@ namespace REST.Storage.Common
                 entity.Property(p => p.Id).ValueGeneratedOnAdd();
                 entity.Property(p => p.Content).IsRequired().HasMaxLength(2048);
                 entity.Property(p => p.TweetId).IsRequired();
+
+                entity.HasOne(p => p.Tweet).WithMany(t => t.Posts);
             });
 
             modelBuilder.Entity<Tweet>(entity =>
@@ -74,6 +78,8 @@ namespace REST.Storage.Common
 
                 entity.HasIndex(m => m.Name).IsUnique();
                 entity.HasAlternateKey(m => m.Name);
+
+                entity.HasMany(m => m.Tweets).WithMany(t => t.Markers);
             });
         }
     }

@@ -13,7 +13,7 @@ namespace REST.Service.Implementation
         private readonly DbStorage _context = serviceProvider.GetRequiredService<DbStorage>();
         private readonly IMapper _mapper = mapper;
 
-        public async Task<bool> AddAuthor(AuthorRequestTO author)
+        public async Task<bool> Add(AuthorRequestTO author)
         {
             var a = _mapper.Map<Author>(author);
 
@@ -35,7 +35,7 @@ namespace REST.Service.Implementation
             return true;
         }
 
-        public IList<AuthorResponseTO> GetAuthors()
+        public IList<AuthorResponseTO> GetAll()
         {
             var res = new List<AuthorResponseTO>();
 
@@ -49,15 +49,15 @@ namespace REST.Service.Implementation
 
         public async Task<bool> Patch(int id, JsonPatchDocument<Author> patch)
         {
+            var author = await _context.FindAsync<Author>(id);
+
+            if (author is null)
+            {
+                return false;
+            }
+
             try
             {
-                var author = await _context.FindAsync<Author>(id);
-
-                if (author is null)
-                {
-                    return false;
-                }
-
                 patch.ApplyTo(author);
                 await _context.SaveChangesAsync();
             }
@@ -69,7 +69,7 @@ namespace REST.Service.Implementation
             return true;
         }
 
-        public async Task<bool> RemoveAuthor(int id)
+        public async Task<bool> Remove(int id)
         {
             var a = new Author() { Id = id };
 
@@ -85,7 +85,7 @@ namespace REST.Service.Implementation
             return true;
         }
 
-        public async Task<bool> UpdateAuthor(AuthorRequestTO author)
+        public async Task<bool> Update(AuthorRequestTO author)
         {
             var a = _mapper.Map<Author>(author);
 
@@ -106,7 +106,7 @@ namespace REST.Service.Implementation
             return true;
         }
 
-        protected bool Validate(Author author)
+        private static bool Validate(Author author)
         {
             var fnameLen = author.FirstName.Length;
             var lnameLen = author.LastName.Length;
