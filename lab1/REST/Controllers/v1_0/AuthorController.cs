@@ -57,7 +57,7 @@ namespace REST.Controllers.V1_0
         {
             var res = AuthorService.Remove(id);
 
-            Logger.LogInformation("Deleted {id}", id);
+            Logger.LogInformation("Deleted author {id}", id);
 
             return await res ? Ok() : BadRequest();
         }

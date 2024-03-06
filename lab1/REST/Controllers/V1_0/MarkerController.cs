@@ -14,7 +14,7 @@ namespace REST.Controllers.V1_0
         {
             var authors = MarkerService.GetAll();
 
-            Logger.LogInformation("Authors read");
+            Logger.LogInformation("Markers read");
 
             return Json(authors);
         }
@@ -56,7 +56,7 @@ namespace REST.Controllers.V1_0
         {
             var res = MarkerService.Remove(id);
 
-            Logger.LogInformation("Deleted {id}", id);
+            Logger.LogInformation("Deleted marker {id}", id);
 
             return await res ? Ok() : BadRequest();
         }
