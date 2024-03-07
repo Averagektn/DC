@@ -1,16 +1,9 @@
-﻿using Microsoft.AspNetCore.JsonPatch;
-using REST.Entity.Db;
+﻿using REST.Entity.Db;
 using REST.Entity.DTO.RequestTO;
 using REST.Entity.DTO.ResponseTO;
+using REST.Service.Interface.Common;
 
 namespace REST.Service.Interface
 {
-    public interface IPostService
-    {
-        Task<bool> Patch(int id, JsonPatchDocument<Post> patch);
-        IList<PostResponseTO> GetAll();
-        Task<bool> Add(PostRequestTO post);
-        Task<bool> Remove(int id);
-        Task<bool> Update(PostRequestTO post);
-    }
+    public interface IPostService : ICrudService<Post, PostRequestTO, PostResponseTO> { }
 }

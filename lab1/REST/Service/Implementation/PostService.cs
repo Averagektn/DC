@@ -4,6 +4,7 @@ using REST.Entity.Db;
 using REST.Entity.DTO.RequestTO;
 using REST.Entity.DTO.ResponseTO;
 using REST.Service.Interface;
+using REST.Service.Interface.Common;
 using REST.Storage.Common;
 
 namespace REST.Service.Implementation
@@ -113,6 +114,16 @@ namespace REST.Service.Implementation
                 return false;
             }
             return true;
+        }
+
+        Task<AuthorResponseTO> ICrudService<Post, PostRequestTO, PostResponseTO>.Add(PostRequestTO author)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<PostResponseTO> GetByID(int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

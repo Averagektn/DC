@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
 using REST.Entity.Db;
 using REST.Entity.DTO.RequestTO;
 using REST.Entity.DTO.ResponseTO;
@@ -37,14 +38,7 @@ namespace REST.Service.Implementation
 
         public IList<AuthorResponseTO> GetAll()
         {
-            var res = new List<AuthorResponseTO>();
-
-            foreach (var author in _context.Authors)
-            {
-                res.Add(_mapper.Map<AuthorResponseTO>(author));
-            }
-
-            return res;
+            return _context.Authors.Select(_mapper.Map<AuthorResponseTO>).ToList();
         }
 
         public async Task<bool> Patch(int id, JsonPatchDocument<Author> patch)
@@ -104,6 +98,18 @@ namespace REST.Service.Implementation
                 return false;
             }
             return true;
+        }
+
+        public async Task<AuthorResponseTO> GetByID([FromRoute] int id)
+        {
+            var a = await _context.Authors.FindAsync(id);
+
+            if (a is null)
+            {
+                throw new ArgumentNullException($"Not found AUTHOR {id}");
+            }
+
+            return _mapper.Map<AuthorResponseTO>(a);
         }
 
         private static bool Validate(Author author)
