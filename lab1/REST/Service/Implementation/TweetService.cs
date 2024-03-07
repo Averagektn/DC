@@ -8,9 +8,9 @@ using REST.Storage.Common;
 
 namespace REST.Service.Implementation
 {
-    public class TweetService(IServiceProvider serviceProvider, IMapper mapper) : ITweetService
+    public class TweetService(DbStorage dbStorage, IMapper mapper) : ITweetService
     {
-        private readonly DbStorage _context = serviceProvider.GetRequiredService<DbStorage>();
+        private readonly DbStorage _context = dbStorage;
         private readonly IMapper _mapper = mapper;
 
         public async Task<bool> Add(TweetRequestTO tweet)

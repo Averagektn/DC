@@ -8,9 +8,9 @@ using REST.Storage.Common;
 
 namespace REST.Service.Implementation
 {
-    public class AuthorService(IServiceProvider serviceProvider, IMapper mapper) : IAuthorService
+    public class AuthorService(DbStorage dbStorage, IMapper mapper) : IAuthorService
     {
-        private readonly DbStorage _context = serviceProvider.GetRequiredService<DbStorage>();
+        private readonly DbStorage _context = dbStorage;
         private readonly IMapper _mapper = mapper;
 
         public async Task<AuthorResponseTO> Add(AuthorRequestTO author)

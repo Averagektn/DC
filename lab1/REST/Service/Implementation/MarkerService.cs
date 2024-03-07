@@ -8,9 +8,9 @@ using REST.Storage.Common;
 
 namespace REST.Service.Implementation
 {
-    public class MarkerService(IServiceProvider serviceProvider, IMapper mapper) : IMarkerService
+    public class MarkerService(DbStorage dbStorage, IMapper mapper) : IMarkerService
     {
-        private readonly DbStorage _context = serviceProvider.GetRequiredService<DbStorage>();
+        private readonly DbStorage _context = dbStorage;
         private readonly IMapper _mapper = mapper;
 
         public async Task<bool> Add(MarkerRequestTO marker)

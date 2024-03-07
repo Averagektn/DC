@@ -8,9 +8,9 @@ using REST.Storage.Common;
 
 namespace REST.Service.Implementation
 {
-    public class PostService(IServiceProvider serviceProvider, IMapper mapper) : IPostService
+    public class PostService(DbStorage dbStorage, IMapper mapper) : IPostService
     {
-        private readonly DbStorage _context = serviceProvider.GetRequiredService<DbStorage>();
+        private readonly DbStorage _context = dbStorage;
         private readonly IMapper _mapper = mapper;
 
         public async Task<bool> Add(PostRequestTO post)
