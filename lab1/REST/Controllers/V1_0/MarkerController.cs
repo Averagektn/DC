@@ -20,7 +20,7 @@ namespace REST.Controllers.V1_0
             return Json(authors);
         }
 
-        [HttpPost]
+/*        [HttpPost]
         public async Task<IActionResult> Create([FromBody] MarkerRequestTO marker)
         {
             var res = MarkerService.Add(marker);
@@ -28,7 +28,7 @@ namespace REST.Controllers.V1_0
             Logger.LogInformation("Creating {res}", Json(marker).Value);
 
             return await res ? Created() : BadRequest();
-        }
+        }*/
 
         [HttpPut]
         public async Task<IActionResult> Update([FromBody] MarkerRequestTO marker)

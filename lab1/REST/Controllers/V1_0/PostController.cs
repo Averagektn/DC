@@ -20,7 +20,7 @@ namespace REST.Controllers.V1_0
             return Json(authors);
         }
 
-        [HttpPost]
+/*        [HttpPost]
         public async Task<IActionResult> Create([FromBody] PostRequestTO post)
         {
             var res = PostService.Add(post);
@@ -29,7 +29,7 @@ namespace REST.Controllers.V1_0
 
             return await res ? Created() : BadRequest();
         }
-
+*/
         [HttpPut]
         public async Task<IActionResult> Update([FromBody] PostRequestTO post)
         {

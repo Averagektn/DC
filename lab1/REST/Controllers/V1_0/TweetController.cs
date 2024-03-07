@@ -20,7 +20,7 @@ namespace REST.Controllers.V1_0
             return Json(authors);
         }
 
-        [HttpPost]
+/*        [HttpPost]
         public async Task<IActionResult> Create([FromBody] TweetRequestTO tweet)
         {
             var res = TweetService.Add(tweet);
@@ -28,7 +28,7 @@ namespace REST.Controllers.V1_0
             Logger.LogInformation("Creating {res}", Json(tweet).Value);
 
             return await res ? Created() : BadRequest();
-        }
+        }*/
 
         [HttpPut]
         public async Task<IActionResult> Update([FromBody] TweetRequestTO tweet)

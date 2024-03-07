@@ -78,5 +78,25 @@ namespace REST.Controllers.V1_0
 
             return await res ? Ok() : BadRequest();
         }
+
+        [HttpGet]
+        [Route("{id:int}")]
+        public async Task<JsonResult> GetByID([FromRoute] int id)
+        {
+            Logger.LogInformation("Get AUTHOR {id}", id);
+            AuthorResponseTO? response = null;
+
+            try
+            {
+                response = await AuthorService.GetByID(id);
+            }
+            catch
+            {
+                Logger.LogError("ERROR getting AUTHOR {id}", id);
+                Response.StatusCode = (int)HttpStatusCode.NotFound;
+            }
+
+            return Json(response);
+        }
     }
 }
