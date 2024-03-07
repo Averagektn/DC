@@ -9,7 +9,7 @@ namespace REST.Service.Interface
     {
         Task<bool> Patch(int id, JsonPatchDocument<Author> patch);
         IList<AuthorResponseTO> GetAll();
-        Task<bool> Add(AuthorRequestTO author);
+        Task<AuthorResponseTO> Add(AuthorRequestTO author);
         Task<bool> Remove(int id);
         Task<bool> Update(AuthorRequestTO author);
     }

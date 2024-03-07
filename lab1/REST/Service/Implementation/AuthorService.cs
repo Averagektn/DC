@@ -13,13 +13,13 @@ namespace REST.Service.Implementation
         private readonly DbStorage _context = serviceProvider.GetRequiredService<DbStorage>();
         private readonly IMapper _mapper = mapper;
 
-        public async Task<bool> Add(AuthorRequestTO author)
+        public async Task<AuthorResponseTO> Add(AuthorRequestTO author)
         {
             var a = _mapper.Map<Author>(author);
 
             if (!Validate(a))
             {
-                return false;
+                throw new InvalidDataException("Author is not valid");
             }
 
             try
@@ -29,10 +29,10 @@ namespace REST.Service.Implementation
             }
             catch
             {
-                return false;
+                throw;
             }
 
-            return true;
+            return _mapper.Map<AuthorResponseTO>(a);
         }
 
         public IList<AuthorResponseTO> GetAll()

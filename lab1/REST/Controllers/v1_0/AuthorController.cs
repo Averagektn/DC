@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using REST.Entity.Db;
 using REST.Entity.DTO.RequestTO;
+using REST.Entity.DTO.ResponseTO;
 using REST.Service.Interface;
+using System.Net;
 
 namespace REST.Controllers.V1_0
 {
@@ -21,13 +23,28 @@ namespace REST.Controllers.V1_0
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] AuthorRequestTO author)
+        public async Task<JsonResult> Create([FromBody] AuthorRequestTO author)
         {
-            var res = AuthorService.Add(author);
-
+            Task<AuthorResponseTO>? res = null;
             Logger.LogInformation("Creating {res}", Json(author).Value);
 
-            return await res ? Created() : BadRequest();
+            try
+            {
+                Response.StatusCode = (int)HttpStatusCode.Created;
+                res = AuthorService.Add(author);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Invalid request at ADD AUTHOR {ex}", ex);
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            }
+
+            if (res is not null)
+            {
+                var a = await res;
+                return Json(a);
+            }
+            return Json(new EmptyResult());
         }
 
         [HttpPut]
