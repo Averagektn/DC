@@ -69,12 +69,15 @@ namespace REST.Service.Implementation
             return _mapper.Map<PostResponseTO>(p);
         }
 
-        public Task<IList<Post>> GetByTweetID(int tweetId)
+        public async Task<PostResponseTO> GetByID(int id)
         {
-            throw new NotImplementedException();
+            var a = await _context.Posts.FindAsync(id);
+
+            return a is not null ? _mapper.Map<PostResponseTO>(a)
+                : throw new ArgumentNullException($"Not found POST {id}");
         }
 
-        public Task<PostResponseTO> GetByID(int id)
+        public Task<IList<Post>> GetByTweetID(int tweetId)
         {
             throw new NotImplementedException();
         }

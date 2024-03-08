@@ -69,12 +69,15 @@ namespace REST.Service.Implementation
             return _mapper.Map<MarkerResponseTO>(m);
         }
 
-        public Task<IList<MarkerResponseTO>> GetByTweetID(int tweetId)
+        public async Task<MarkerResponseTO> GetByID(int id)
         {
-            throw new NotImplementedException();
+            var a = await _context.Markers.FindAsync(id);
+
+            return a is not null ? _mapper.Map<MarkerResponseTO>(a)
+                : throw new ArgumentNullException($"Not found MARKER {id}");
         }
 
-        public Task<MarkerResponseTO> GetByID(int id)
+        public Task<IList<MarkerResponseTO>> GetByTweetID(int tweetId)
         {
             throw new NotImplementedException();
         }

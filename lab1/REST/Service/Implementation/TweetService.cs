@@ -77,9 +77,13 @@ namespace REST.Service.Implementation
             throw new NotImplementedException();
         }
 
-        public Task<TweetResponseTO> GetByID(int id)
+        public async Task<TweetResponseTO> GetByID(int id)
         {
-            throw new NotImplementedException();
+
+            var a = await _context.Tweets.Include(t => t.Author).FirstAsync(t => t.Id == id);
+
+            return a is not null ? _mapper.Map<TweetResponseTO>(a)
+                : throw new ArgumentNullException($"Not found TWEET {id}");
         }
 
         private static bool Validate(Tweet tweet)
