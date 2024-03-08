@@ -5,7 +5,7 @@ using REST.Service.Interface.Common;
 
 namespace REST.Service.Interface
 {
-    public interface IAuthorService : ICrudService<Author, AuthorRequestTO, AuthorResponseTO> 
+    public interface IAuthorService : ICrudService<Author, AuthorRequestTO, AuthorResponseTO>
     {
         Task<AuthorResponseTO> GetByTweetID(int tweetId);
     }
