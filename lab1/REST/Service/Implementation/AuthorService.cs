@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using REST.Entity.Db;
 using REST.Entity.DTO.RequestTO;
 using REST.Entity.DTO.ResponseTO;
@@ -78,9 +79,11 @@ namespace REST.Service.Implementation
                 : throw new ArgumentNullException($"Not found AUTHOR {id}");
         }
 
-        public Task<AuthorResponseTO> GetByTweetID(int tweetId)
+        public async Task<AuthorResponseTO> GetByTweetID(int tweetId)
         {
-            throw new NotImplementedException();
+            var response = await _context.Tweets.Include(t => t.Author).FirstAsync(t => t.Id == tweetId);
+
+            return _mapper.Map<AuthorResponseTO>(response.Author);
         }
 
         private static bool Validate(Author author)
