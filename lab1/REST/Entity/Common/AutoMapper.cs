@@ -9,12 +9,18 @@ namespace REST.Entity.Common
     {
         public AutoMapper()
         {
-            CreateMap<AuthorRequestTO, Author>();
+            CreateMap<AuthorRequestTO, Author>()
+                .ForMember(dst => dst.Id, map => map.MapFrom(src => 1));
             CreateMap<Author, AuthorResponseTO>();
-            CreateMap<MarkerRequestTO, Marker>();
+
+            CreateMap<MarkerRequestTO, Marker>()
+                .ForMember(dst => dst.Id, map => map.MapFrom(src => 1));
             CreateMap<Marker, MarkerResponseTO>();
-            CreateMap<PostRequestTO, Post>();
+
+            CreateMap<PostRequestTO, Post>()
+                .ForMember(dst => dst.Id, map => map.MapFrom(src => 1));
             CreateMap<Post, PostResponseTO>();
+
             CreateMap<TweetRequestTO, Tweet>()
                 .ForMember(dst => dst.Author, map => map.MapFrom(src => new Author() { Id = src.AuthorId }));
             CreateMap<Tweet, TweetResponseTO>()
