@@ -22,7 +22,8 @@ namespace REST.Entity.Common
             CreateMap<Post, PostResponseTO>();
 
             CreateMap<TweetRequestTO, Tweet>()
-                .ForMember(dst => dst.Author, map => map.MapFrom(src => new Author() { Id = src.AuthorId }));
+                .ForMember(dst => dst.Author, map => map.MapFrom(src => new Author() { Id = src.AuthorId }))
+                .ForMember(dst => dst.Id, map => map.MapFrom(src => 1));
             CreateMap<Tweet, TweetResponseTO>()
                 .ForMember(dst => dst.AuthorId, map => map.MapFrom(src => src.Author.Id));
         }
