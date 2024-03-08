@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using REST.Service.Interface.Common;
 using System.Net;
 
-namespace REST.Controllers.Common
+namespace REST.Controllers.V1_0.Common
 {
     public abstract class AbstractController<Entity, RequestTO, ResponseTO>
         (ICrudService<Entity, RequestTO, ResponseTO> Service, ILogger Logger) : Controller
