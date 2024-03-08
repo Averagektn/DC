@@ -5,5 +5,8 @@ using REST.Service.Interface.Common;
 
 namespace REST.Service.Interface
 {
-    public interface IMarkerService : ICrudService<Marker, MarkerRequestTO, MarkerResponseTO> { }
+    public interface IMarkerService : ICrudService<Marker, MarkerRequestTO, MarkerResponseTO>
+    {
+        Task<IList<MarkerResponseTO>> GetByTweetID(int tweetId);
+    }
 }

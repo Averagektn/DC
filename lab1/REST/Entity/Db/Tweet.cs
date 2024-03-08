@@ -5,7 +5,6 @@ namespace REST.Entity.Db
 {
     public class Tweet(string title, string content, DateTime created, DateTime modified) : AbstractEntity
     {
-        public int AuthorId { get; set; }
         [MinLength(2)]
         public string Title { get; set; } = title;
         [MinLength(4)]
@@ -21,7 +20,7 @@ namespace REST.Entity.Db
             : this(title, content, created, modified)
         {
             Id = id;
-            AuthorId = authorId;
+            Author = new() { Id = authorId };
         }
     }
 }

@@ -58,7 +58,6 @@ namespace REST.Storage.Common
 
                 entity.Property(a => a.Id).ValueGeneratedOnAdd();
                 entity.Property(t => t.Content).IsRequired().HasMaxLength(2048);
-                entity.Property(t => t.AuthorId).IsRequired();
                 entity.Property(t => t.Created).IsRequired();
                 entity.Property(t => t.Modified).IsRequired();
                 entity.Property(t => t.Title).IsRequired().HasMaxLength(64);

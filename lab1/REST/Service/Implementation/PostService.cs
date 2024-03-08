@@ -4,7 +4,6 @@ using REST.Entity.Db;
 using REST.Entity.DTO.RequestTO;
 using REST.Entity.DTO.ResponseTO;
 using REST.Service.Interface;
-using REST.Service.Interface.Common;
 using REST.Storage.Common;
 
 namespace REST.Service.Implementation
@@ -14,95 +13,70 @@ namespace REST.Service.Implementation
         private readonly DbStorage _context = dbStorage;
         private readonly IMapper _mapper = mapper;
 
-        public async Task<bool> Add(PostRequestTO post)
+        public async Task<PostResponseTO> Add(PostRequestTO post)
         {
             var p = _mapper.Map<Post>(post);
 
             if (!Validate(p))
             {
-                return false;
+                throw new InvalidDataException("POST is not valid");
             }
 
-            try
-            {
-                _context.Posts.Add(p);
-                await _context.SaveChangesAsync();
-            }
-            catch
-            {
-                return false;
-            }
-            return true;
+            _context.Posts.Add(p);
+            await _context.SaveChangesAsync();
+
+            return _mapper.Map<PostResponseTO>(p);
         }
 
         public IList<PostResponseTO> GetAll()
         {
-            var res = new List<PostResponseTO>();
-
-            foreach (var p in _context.Posts)
-            {
-                res.Add(_mapper.Map<PostResponseTO>(p));
-            }
-
-            return res;
+            return _context.Posts.Select(_mapper.Map<PostResponseTO>).ToList();
         }
 
-        public async Task<bool> Patch(int id, JsonPatchDocument<Post> patch)
+        public async Task<PostResponseTO> Patch(int id, JsonPatchDocument<Post> patch)
         {
-            var target = _context.Find<Post>(id);
-            if (target is null)
-            {
-                return false;
-            }
+            var target = await _context.FindAsync<Post>(id)
+                ?? throw new ArgumentNullException($"POST {id} not found at PATCH {patch}");
 
-            try
-            {
-                patch.ApplyTo(target);
-                await _context.SaveChangesAsync();
-            }
-            catch
-            {
-                return false;
-            }
+            patch.ApplyTo(target);
+            await _context.SaveChangesAsync();
 
-            return true;
+            return _mapper.Map<PostResponseTO>(target);
         }
 
         public async Task<bool> Remove(int id)
         {
             var target = new Post() { Id = id };
 
-            try
-            {
-                _context.Remove(target);
-                await _context.SaveChangesAsync();
-            }
-            catch
-            {
-                return false;
-            }
+            _context.Remove(target);
+            await _context.SaveChangesAsync();
+
             return true;
         }
 
-        public async Task<bool> Update(PostRequestTO post)
+        public async Task<PostResponseTO> Update(PostRequestTO post)
         {
             var p = _mapper.Map<Post>(post);
 
             if (!Validate(p))
             {
-                return false;
+                throw new InvalidDataException($"UPDATE invalid data: {post}");
             }
 
-            try
-            {
-                _context.Update(p);
-                await _context.SaveChangesAsync();
-            }
-            catch
-            {
-                return false;
-            }
-            return true;
+            _context.Update(p);
+            await _context.SaveChangesAsync();
+
+            return _mapper.Map<PostResponseTO>(p);
+        }
+
+        public Task<IList<Post>> GetByTweetID(int tweetId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<PostResponseTO> GetByID(int id)
+        {
+            throw new NotImplementedException();
         }
 
         private static bool Validate(Post post)
@@ -114,16 +88,6 @@ namespace REST.Service.Implementation
                 return false;
             }
             return true;
-        }
-
-        Task<AuthorResponseTO> ICrudService<Post, PostRequestTO, PostResponseTO>.Add(PostRequestTO author)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<PostResponseTO> GetByID(int id)
-        {
-            throw new NotImplementedException();
         }
     }
 }

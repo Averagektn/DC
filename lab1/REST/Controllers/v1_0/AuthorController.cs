@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using REST.Entity.Db;
 using REST.Entity.DTO.RequestTO;
 using REST.Entity.DTO.ResponseTO;
+using REST.Service.Implementation;
 using REST.Service.Interface;
 using System.Net;
 
@@ -25,13 +26,13 @@ namespace REST.Controllers.V1_0
         [HttpPost]
         public async Task<JsonResult> Create([FromBody] AuthorRequestTO author)
         {
-            Task<AuthorResponseTO>? res = null;
+            AuthorResponseTO? response = null;
             Logger.LogInformation("Creating {res}", Json(author).Value);
+            Response.StatusCode = (int)HttpStatusCode.Created;
 
             try
             {
-                Response.StatusCode = (int)HttpStatusCode.Created;
-                res = AuthorService.Add(author);
+                response = await AuthorService.Add(author);
             }
             catch (Exception ex)
             {
@@ -39,44 +40,65 @@ namespace REST.Controllers.V1_0
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
             }
 
-            if (res is not null)
-            {
-                var a = await res;
-                return Json(a);
-            }
-            return Json(new EmptyResult());
+            return Json(response);
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody] AuthorRequestTO author)
+        public async Task<JsonResult> Update([FromBody] AuthorRequestTO author)
         {
-            var res = AuthorService.Update(author);
+            AuthorResponseTO? response = null;
+            Logger.LogInformation("Updating author: {author}", Json(author).Value);
 
-            Logger.LogInformation("Updated author: {author}", Json(author).Value);
+            try
+            {
+                response = await AuthorService.Update(author);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Invalid request at UPDATE AUTHOR {ex}", ex);
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;  
+            }
 
-            return await res ? Ok() : BadRequest();
+            return Json(response);
         }
 
         [HttpPatch]
         [Route("{id:int}")]
-        public async Task<IActionResult> PartialUpdate([FromRoute] int id, [FromBody] JsonPatchDocument<Author> author)
+        public async Task<JsonResult> PartialUpdate([FromRoute] int id, [FromBody] JsonPatchDocument<Author> author)
         {
-            var res = AuthorService.Patch(id, author);
+            AuthorResponseTO? response = null;
+            Logger.LogInformation("Patching {author}", author);
 
-            Logger.LogInformation("Patched {author}", author);
+            try
+            {
+                response = await AuthorService.Patch(id, author);
+            }
+            catch(Exception ex)
+            {
+                Logger.LogError("Invalid request at PATCH AUTHOR {ex}", ex);
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            }
 
-            return await res ? Ok() : BadRequest();
+            return Json(response);
         }
 
         [HttpDelete]
         [Route("{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            var res = AuthorService.Remove(id);
-
+            bool res = false;
             Logger.LogInformation("Deleted author {id}", id);
 
-            return await res ? Ok() : BadRequest();
+            try
+            {
+                res = await AuthorService.Remove(id);
+            }
+            catch
+            {
+                Logger.LogInformation("Deleting failed {id}", id);
+            }
+
+            return res ? Ok() : BadRequest();
         }
 
         [HttpGet]

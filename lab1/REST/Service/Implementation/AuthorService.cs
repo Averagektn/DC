@@ -23,15 +23,8 @@ namespace REST.Service.Implementation
                 throw new InvalidDataException("Author is not valid");
             }
 
-            try
-            {
-                _context.Add(a);
-                await _context.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            _context.Add(a);
+            await _context.SaveChangesAsync();
 
             return _mapper.Map<AuthorResponseTO>(a);
         }
@@ -41,75 +34,53 @@ namespace REST.Service.Implementation
             return _context.Authors.Select(_mapper.Map<AuthorResponseTO>).ToList();
         }
 
-        public async Task<bool> Patch(int id, JsonPatchDocument<Author> patch)
+        public async Task<AuthorResponseTO> Patch(int id, JsonPatchDocument<Author> patch)
         {
-            var author = await _context.FindAsync<Author>(id);
+            var author = await _context.FindAsync<Author>(id)
+                ?? throw new InvalidDataException($"AUTHOR {id} not found at PATCH {patch}");
 
-            if (author is null)
-            {
-                return false;
-            }
+            patch.ApplyTo(author);
+            await _context.SaveChangesAsync();
 
-            try
-            {
-                patch.ApplyTo(author);
-                await _context.SaveChangesAsync();
-            }
-            catch
-            {
-                return false;
-            }
-
-            return true;
+            return _mapper.Map<AuthorResponseTO>(author);
         }
 
         public async Task<bool> Remove(int id)
         {
             var a = new Author() { Id = id };
 
-            try
-            {
-                _context.Remove(a);
-                await _context.SaveChangesAsync();
-            }
-            catch
-            {
-                return false;
-            }
+            _context.Remove(a);
+            await _context.SaveChangesAsync();
+
             return true;
         }
 
-        public async Task<bool> Update(AuthorRequestTO author)
+        public async Task<AuthorResponseTO> Update(AuthorRequestTO author)
         {
             var a = _mapper.Map<Author>(author);
 
             if (!Validate(a))
             {
-                return false;
+                throw new InvalidDataException($"UPDATE invalid data: {author}");
             }
 
-            try
-            {
-                _context.Update(a);
-                await _context.SaveChangesAsync();
-            }
-            catch
-            {
-                return false;
-            }
-            return true;
+            _context.Update(a);
+            await _context.SaveChangesAsync();
+
+            return _mapper.Map<AuthorResponseTO>(a);
         }
 
         public async Task<AuthorResponseTO> GetByID([FromRoute] int id)
         {
             var a = await _context.Authors.FindAsync(id);
 
-            if (a is null)
-            {
-                throw new ArgumentNullException($"Not found AUTHOR {id}");
-            }
+            return a is not null ? _mapper.Map<AuthorResponseTO>(a)
+                : throw new ArgumentNullException($"Not found AUTHOR {id}");
+        }
 
-            return _mapper.Map<AuthorResponseTO>(a);
+        public Task<AuthorResponseTO> GetByTweetID(int tweetId)
+        {
+            throw new NotImplementedException();
         }
 
         private static bool Validate(Author author)

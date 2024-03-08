@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.JsonPatch;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using REST.Entity.Db;
 using REST.Entity.DTO.RequestTO;
+using REST.Entity.DTO.ResponseTO;
+using REST.Service.Implementation;
 using REST.Service.Interface;
+using System.Net;
 
 namespace REST.Controllers.V1_0
 {
@@ -20,46 +24,82 @@ namespace REST.Controllers.V1_0
             return Json(authors);
         }
 
-/*        [HttpPost]
+        [HttpPost]
         public async Task<IActionResult> Create([FromBody] PostRequestTO post)
         {
-            var res = PostService.Add(post);
-
+            PostResponseTO? response = null;
             Logger.LogInformation("Creating {res}", Json(post).Value);
+            Response.StatusCode = (int)HttpStatusCode.Created;
 
-            return await res ? Created() : BadRequest();
+            try
+            {
+                response = await PostService.Add(post);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Invalid request at ADD POST {ex}", ex);
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            }
+
+            return Json(response);
         }
-*/
+
         [HttpPut]
         public async Task<IActionResult> Update([FromBody] PostRequestTO post)
         {
-            var res = PostService.Update(post);
+            PostResponseTO? response = null;
+            Logger.LogInformation("Updating post: {post}", Json(post).Value);
 
-            Logger.LogInformation("Updated author: {post}", Json(post).Value);
+            try
+            {
+                response = await PostService.Update(post);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Invalid request at UPDATE POST {ex}", ex);
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            }
 
-            return await res ? Ok() : BadRequest();
+            return Json(response);
         }
 
         [HttpPatch]
         [Route("{id:int}")]
         public async Task<IActionResult> PartialUpdate([FromRoute] int id, [FromBody] JsonPatchDocument<Post> post)
         {
-            var res = PostService.Patch(id, post);
+            PostResponseTO? response = null;
+            Logger.LogInformation("Patching {post}", post);
 
-            Logger.LogInformation("Patched {post}", post);
+            try
+            {
+                response = await PostService.Patch(id, post);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Invalid request at PATCH POST {ex}", ex);
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            }
 
-            return await res ? Ok() : BadRequest();
+            return Json(response);
         }
 
         [HttpDelete]
         [Route("{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            var res = PostService.Remove(id);
-
+            bool res = false;
             Logger.LogInformation("Deleted post {id}", id);
 
-            return await res ? Ok() : BadRequest();
+            try
+            {
+                res = await PostService.Remove(id);
+            }
+            catch
+            {
+                Logger.LogInformation("Deleting failed {id}", id);
+            }
+
+            return res ? Ok() : BadRequest();
         }
     }
 }
