@@ -22,7 +22,7 @@ namespace REST.Storage.Common
 
             modelBuilder.Entity<Author>(entity =>
             {
-                entity.ToTable("Authors");
+                entity.ToTable("tbl_authors");
 
                 entity.HasKey(e => e.Id);
 
@@ -39,7 +39,7 @@ namespace REST.Storage.Common
 
             modelBuilder.Entity<Post>((entity) =>
             {
-                entity.ToTable("posts");
+                entity.ToTable("tbl_posts");
 
                 entity.HasKey(p => p.Id);
 
@@ -52,7 +52,7 @@ namespace REST.Storage.Common
 
             modelBuilder.Entity<Tweet>(entity =>
             {
-                entity.ToTable("tweets");
+                entity.ToTable("tbl_tweets");
 
                 entity.HasKey(t => t.Id);
 
@@ -67,7 +67,7 @@ namespace REST.Storage.Common
 
             modelBuilder.Entity<Marker>(entity =>
             {
-                entity.ToTable("markers");
+                entity.ToTable("tbl_markers");
 
                 entity.HasKey(m => m.Id);
                 entity.Property(m => m.Id).ValueGeneratedOnAdd();
