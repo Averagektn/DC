@@ -1,4 +1,3 @@
-using REST.Entity.Common;
 using REST.Middleware;
 using REST.Service.Implementation;
 using REST.Service.Interface;

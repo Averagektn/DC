@@ -20,7 +20,38 @@ namespace Test
         private static readonly string[] assemblyNamesToScan = ["REST"];
 
         [TestMethod]
-        public async Task GetByTweetID_ReturnsJsonResult()
+        public async Task GetAll()
+        {
+
+        }
+
+        [TestMethod]
+        public async Task Delete()
+        {
+
+        }
+
+        [TestMethod]
+        public async Task Create()
+        {
+
+        }
+
+        [TestMethod]
+        public async Task Update()
+        {
+
+        }
+
+        [TestMethod]
+        public async Task Patch()
+        {
+
+        }
+
+
+        [TestMethod]
+        public async Task GetByTweetIDTest()
         {
             int tweetId = 1;
             var expectedResponse = new AuthorResponseTO(1, "login", "fname", "lname");
@@ -75,19 +106,6 @@ namespace Test
             var result = await controller.GetByTweetID(tweetId);
 
             Assert.AreEqual((int)HttpStatusCode.BadRequest, controller.Response.StatusCode);
-        }
-
-        private static Mock<IMapper> GetMapper()
-        {
-            var mockMapper = new Mock<IMapper>();
-            mockMapper.Setup(x => x.Map<Author>(It.IsAny<AuthorRequestTO>()))
-                .Returns((AuthorRequestTO source) => new Author(1, "login", "password", "fname", "lname"));
-            mockMapper.Setup(x => x.Map<AuthorResponseTO>(It.IsAny<Author>()))
-                .Returns((Author source) => new(1, "login", "fname", "lname"));
-            mockMapper.Setup(x => x.Map<Tweet>(It.IsAny<TweetRequestTO>()))
-                .Returns((TweetRequestTO tweet) => new(1, new(1, "login", "password", "fname", "lname"), "title", "content", DateTime.Now, DateTime.Now));
-
-            return mockMapper;
         }
     }
 }
