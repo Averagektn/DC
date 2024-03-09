@@ -36,7 +36,24 @@ namespace Test
         }
 
         [TestMethod]
-        public async Task GetByTweetIDTest()
+        public void GetAll()
+        {
+            var authorService = new AuthorService(_context, _mapper);
+            var authorController = new AuthorController(authorService, _loggerMock.Object)
+            {
+                ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
+            };
+
+            var result = authorController.Read();
+            var expected = 1;
+
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOfType(result.Value, typeof(List<AuthorResponseTO>));
+            Assert.AreEqual(expected, ((List<AuthorResponseTO>)result.Value).Count);
+        }
+
+        [TestMethod]
+        public async Task GetByTweetID()
         {
             int tweetId = 1;
             var author = new Author(1, "login", "password", "fname", "lname");
@@ -65,23 +82,6 @@ namespace Test
         }
 
         [TestMethod]
-        public void GetAll()
-        {
-            var authorService = new AuthorService(_context, _mapper);
-            var authorController = new AuthorController(authorService, _loggerMock.Object)
-            {
-                ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
-            };
-
-            var result = authorController.Read();
-            var expected = new List<AuthorResponseTO> { };
-
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOfType(result.Value, typeof(List<AuthorResponseTO>));
-            CollectionAssert.AreEqual(expected, (List<AuthorResponseTO>)result.Value);
-        }
-
-        [TestMethod]
         public async Task Delete()
         {
             var authorService = new AuthorService(_context, _mapper);
@@ -93,8 +93,9 @@ namespace Test
             await authorController.Create(new(0, "login", "password", "fname", "lname"));
 
             _context.ChangeTracker.Clear();
-
+            
             var result = await authorController.Delete(1);
+
             var expected = typeof(NoContentResult);
 
             Assert.IsInstanceOfType(result, expected);
@@ -110,7 +111,7 @@ namespace Test
             };
 
             var result = await authorController.Create(new(0, "login", "password", "fname", "lname"));
-            var expected = new AuthorResponseTO(1, "login", "fname", "lname");
+            var expected = new AuthorResponseTO(2, "login", "fname", "lname");
 
             Assert.AreEqual(expected, result.Value);
         }
@@ -135,7 +136,7 @@ namespace Test
         }
 
         [TestMethod]
-        public async Task Patch()
+        public async Task APatch()
         {
             var authorService = new AuthorService(_context, _mapper);
             var authorController = new AuthorController(authorService, _loggerMock.Object)
@@ -145,17 +146,19 @@ namespace Test
 
             await authorController.Create(new(0, "login", "password", "fname", "lname"));
 
-            var expected = new AuthorResponseTO(1, "newLogin", "fname", "lname");
+            var expected = new AuthorResponseTO(2, "login", "newName", "lname");
             var patch = new JsonPatchDocument<Author>();
             var addOperation = new Operation<Author>
             {
                 op = "add",
-                path = "/Login",
-                value = "newLogin"
+                path = "/FirstName",
+                value = "newName"
             };
             patch.Operations.Add(addOperation);
 
-            var result = await authorController.PartialUpdate(1, patch);
+            _context.ChangeTracker.Clear();
+
+            var result = await authorController.PartialUpdate(2, patch);
 
             Assert.AreEqual(expected, result.Value);
         }
