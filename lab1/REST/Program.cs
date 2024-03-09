@@ -1,8 +1,10 @@
+using REST.Entity.Common;
 using REST.Middleware;
 using REST.Service.Implementation;
 using REST.Service.Interface;
 using REST.Storage.Common;
 using REST.Storage.InMemoryDb;
+using MyCoolMapper = REST.Entity.Common.AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
@@ -13,7 +15,7 @@ builder.Services
     .AddScoped<IMarkerService, MarkerService>()
     .AddScoped<IPostService, PostService>()
     .AddScoped<ITweetService, TweetService>();
-builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddAutoMapper(typeof(MyCoolMapper));
 
 var app = builder.Build();
 app.UseURLLog();
