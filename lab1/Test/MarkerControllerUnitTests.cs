@@ -3,6 +3,12 @@
     [TestClass]
     public class MarkerControllerUnitTests
     {
+        [TestInitialize]
+        public void TestInit()
+        {
+
+        }
+
         [TestMethod]
         public async Task GetAll()
         {
