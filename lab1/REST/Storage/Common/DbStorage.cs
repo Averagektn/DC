@@ -12,7 +12,6 @@ namespace REST.Storage.Common
 
         public DbStorage()
         {
-            //Database.EnsureDeleted();
             Database.EnsureCreated();
         }
 
