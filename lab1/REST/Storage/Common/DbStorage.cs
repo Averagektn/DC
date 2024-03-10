@@ -12,8 +12,8 @@ namespace REST.Storage.Common
 
         public DbStorage()
         {
+            //Database.EnsureDeleted();
             Database.EnsureCreated();
-            Database.EnsureDeleted();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

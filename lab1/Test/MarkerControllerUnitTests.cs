@@ -31,7 +31,7 @@ namespace Test
         public MarkerControllerUnitTests()
         {
             _markerService = new MarkerService(_context, _mapper);
-            _markerController = new MarkerController(_markerService, _loggerMock.Object)
+            _markerController = new MarkerController(_markerService, _loggerMock.Object, _mapper)
             {
                 ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
             };

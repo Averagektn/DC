@@ -31,7 +31,7 @@ namespace Test
         public AuthorControllerUnitTest()
         {
             _authorService = new AuthorService(_context, _mapper);
-            _authorController = new AuthorController(_authorService, _loggerMock.Object)
+            _authorController = new AuthorController(_authorService, _loggerMock.Object, _mapper)
             {
                 ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
             };
@@ -56,7 +56,7 @@ namespace Test
             var tweetRequest = new TweetRequestTO(0, authorResponse.Id, "title", "content", DateTime.Now, DateTime.Now);
 
             var tweetService = new TweetService(_context, _mapper);
-            var tweetController = new TweetController(tweetService, new Mock<ILogger<TweetController>>().Object)
+            var tweetController = new TweetController(tweetService, new Mock<ILogger<TweetController>>().Object, _mapper)
             {
                 ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
             };

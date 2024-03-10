@@ -32,7 +32,7 @@ namespace Test
         public PostCotrollerUnitTests()
         {
             _postService = new PostService(_context, _mapper);
-            _postController = new PostController(_postService, _loggerMock.Object)
+            _postController = new PostController(_postService, _loggerMock.Object, _mapper)
             {
                 ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
             };
@@ -43,7 +43,7 @@ namespace Test
         {
             var authorLoggerMock = new Mock<ILogger<AuthorController>>();
             var authorService = new AuthorService(_context, _mapper);
-            var authorController = new AuthorController(authorService, authorLoggerMock.Object)
+            var authorController = new AuthorController(authorService, authorLoggerMock.Object, _mapper)
             {
                 ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
             };
@@ -61,7 +61,7 @@ namespace Test
 
             var tweetLoggerMock = new Mock<ILogger<TweetController>>();
             var tweetService = new TweetService(_context, _mapper);
-            var tweetController = new TweetController(tweetService, tweetLoggerMock.Object)
+            var tweetController = new TweetController(tweetService, tweetLoggerMock.Object, _mapper)
             {
                 ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
             };
