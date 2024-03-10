@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using REST.Controllers.V1_0.Common;
 using REST.Entity.Db;
 using REST.Entity.DTO.RequestTO;
@@ -10,8 +11,8 @@ namespace REST.Controllers.V1_0
 {
     [Route("api/v1.0/authors")]
     [ApiController]
-    public class AuthorController(IAuthorService AuthorService, ILogger<AuthorController> Logger) :
-        AbstractController<Author, AuthorRequestTO, AuthorResponseTO>(AuthorService, Logger)
+    public class AuthorController(IAuthorService AuthorService, ILogger<AuthorController> Logger, IMapper Mapper) :
+        AbstractController<Author, AuthorRequestTO, AuthorResponseTO>(AuthorService, Logger, Mapper)
     {
         [HttpGet]
         [Route("tweets/{id:int}")]

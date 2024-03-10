@@ -1,57 +1,144 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.JsonPatch.Operations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using REST.Controllers.V1_0;
+using REST.Entity.Db;
+using REST.Entity.DTO.RequestTO;
 using REST.Entity.DTO.ResponseTO;
-using REST.Service.Interface;
-using System.Net;
+using REST.Service.Implementation;
+using REST.Storage.Common;
+using REST.Storage.InMemoryDb;
 
 namespace Test
 {
     [TestClass]
     public class AuthorControllerUnitTest
     {
-        [TestMethod]
-        public async Task GetByTweetID_ReturnsJsonResult()
+        private readonly Mock<ILogger<AuthorController>> _loggerMock = new();
+        private readonly DbStorage _context = new InMemoryDbContext();
+        private readonly IMapper _mapper = new MapperConfiguration(cfg =>
         {
-            int tweetId = 1;
-            var expectedResponse = new AuthorResponseTO(1, "login", "fname", "lname");
+            cfg.AddMaps(["REST"]);
+        }).CreateMapper();
 
-            var authorServiceMock = new Mock<IAuthorService>();
-            authorServiceMock.Setup(service => service.GetByTweetID(tweetId))
-                .ReturnsAsync(expectedResponse);
+        private readonly AuthorService _authorService;
+        private readonly AuthorController _authorController;
 
-            var loggerMock = new Mock<ILogger<AuthorController>>();
-
-            var controller = new AuthorController(authorServiceMock.Object, loggerMock.Object);
-
-            var result = await controller.GetByTweetID(tweetId);
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual(expectedResponse, result.Value);
+        public AuthorControllerUnitTest()
+        {
+            _authorService = new AuthorService(_context, _mapper);
+            _authorController = new AuthorController(_authorService, _loggerMock.Object, _mapper)
+            {
+                ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
+            };
         }
 
         [TestMethod]
-        public async Task GetByTweetID_ReturnsBadRequest_WhenExceptionThrown()
+        public void GetAll()
         {
-            int tweetId = 1;
-            var expectedException = new Exception("Some error message");
+            var result = _authorController.Read();
 
-            var authorServiceMock = new Mock<IAuthorService>();
-            authorServiceMock.Setup(service => service.GetByTweetID(tweetId))
-                .ThrowsAsync(expectedException);
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOfType(result.Value, typeof(List<AuthorResponseTO>));
+        }
 
-            var loggerMock = new Mock<ILogger<AuthorController>>();
+        [TestMethod]
+        public async Task GetByTweetID()
+        {
+            var authorRequest = new AuthorRequestTO(0, "author", "passwrod", "fname", "lname");
+            var authorResponse = (await _authorController.Create(authorRequest)).Value as AuthorResponseTO;
+            Assert.IsNotNull(authorResponse);
 
-            var controller = new AuthorController(authorServiceMock.Object, loggerMock.Object)
+            var tweetRequest = new TweetRequestTO(0, authorResponse.Id, "title", "content", DateTime.Now, DateTime.Now);
+
+            var tweetService = new TweetService(_context, _mapper);
+            var tweetController = new TweetController(tweetService, new Mock<ILogger<TweetController>>().Object, _mapper)
             {
                 ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
             };
 
-            var result = await controller.GetByTweetID(tweetId);
+            var tweetResponse = (await tweetController.Create(tweetRequest)).Value as TweetResponseTO;
+            Assert.IsNotNull(tweetResponse);
 
-            Assert.AreEqual((int)HttpStatusCode.BadRequest, controller.Response.StatusCode);
+            var result = await _authorController.GetByTweetID(tweetResponse.Id);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(authorResponse, result.Value);
+        }
+
+        [TestMethod]
+        public async Task Delete()
+        {
+            var authorRequest = new AuthorRequestTO(0, "testDeleteLogin", "password", "fname", "lname");
+            var authorResponse = (await _authorController.Create(authorRequest)).Value as AuthorResponseTO;
+            Assert.IsNotNull(authorResponse);
+
+            _context.ChangeTracker.Clear();
+
+            var result = await _authorController.Delete(authorResponse.Id);
+
+            var expected = typeof(NoContentResult);
+
+            Assert.IsInstanceOfType(result, expected);
+        }
+
+        [TestMethod]
+        public async Task Create()
+        {
+            var expectedLogin = "testCreateLogin";
+            var result = (await _authorController.Create(new(0, expectedLogin, "password", "fname", "lname"))).Value
+                as AuthorResponseTO;
+            Assert.IsNotNull(result);
+
+            Assert.AreEqual(expectedLogin, result.Login);
+        }
+
+        [TestMethod]
+        public async Task Update()
+        {
+            var expected = "testedUpdateLogin";
+            var authorResponse = (await _authorController.Create(new(0, "testUpdateLogin", "password", "fname", "lname"))).Value
+                as AuthorResponseTO;
+            Assert.IsNotNull(authorResponse);
+
+            _context.ChangeTracker.Clear();
+
+            var result =
+                (await _authorController.Update(new(authorResponse.Id, expected, "password", "fname", "lname"))).Value
+                as AuthorResponseTO;
+            Assert.IsNotNull(result);
+
+            Assert.AreEqual(expected, result.Login);
+        }
+
+        [TestMethod]
+        public async Task Patch()
+        {
+            var expected = "newPatchTestName";
+            var authorResponse =
+                (await _authorController.Create(new(0, "patchTestLogin", "password", "fname", "lname"))).Value
+                as AuthorResponseTO;
+            Assert.IsNotNull(authorResponse);
+
+            var patch = new JsonPatchDocument<Author>();
+            var addOperation = new Operation<Author>
+            {
+                op = "add",
+                path = "/FirstName",
+                value = expected
+            };
+            patch.Operations.Add(addOperation);
+
+            _context.ChangeTracker.Clear();
+
+            var result = (await _authorController.PartialUpdate(authorResponse.Id, patch)).Value as AuthorResponseTO;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expected, result.FirstName);
         }
     }
 }

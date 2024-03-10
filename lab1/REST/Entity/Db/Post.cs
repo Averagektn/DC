@@ -11,10 +11,11 @@ namespace REST.Entity.Db
         public Tweet Tweet { get; set; } = null!;
 
         public Post() : this(string.Empty) { }
-        public Post(int id, int tweetId, string content) : this(content)
+        public Post(int id, int tweetId, string content, Tweet tweet) : this(content)
         {
             Id = id;
             TweetId = tweetId;
+            Tweet = tweet;
         }
     }
 }

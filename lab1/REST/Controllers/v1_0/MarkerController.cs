@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using REST.Controllers.V1_0.Common;
 using REST.Entity.Db;
 using REST.Entity.DTO.RequestTO;
@@ -9,7 +10,7 @@ namespace REST.Controllers.V1_0
 {
     [Route("api/v1.0/markers")]
     [ApiController]
-    public class MarkerController(IMarkerService MarkerService, ILogger<MarkerController> Logger) :
-        AbstractController<Marker, MarkerRequestTO, MarkerResponseTO>(MarkerService, Logger)
+    public class MarkerController(IMarkerService MarkerService, ILogger<MarkerController> Logger, IMapper Mapper) :
+        AbstractController<Marker, MarkerRequestTO, MarkerResponseTO>(MarkerService, Logger, Mapper)
     { }
 }

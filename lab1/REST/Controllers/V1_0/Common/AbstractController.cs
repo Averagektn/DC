@@ -1,12 +1,14 @@
-﻿using Microsoft.AspNetCore.JsonPatch;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using REST.Service.Interface.Common;
 using System.Net;
 
 namespace REST.Controllers.V1_0.Common
 {
     public abstract class AbstractController<Entity, RequestTO, ResponseTO>
-        (ICrudService<Entity, RequestTO, ResponseTO> Service, ILogger Logger) : Controller
+        (ICrudService<Entity, RequestTO, ResponseTO> Service, ILogger Logger, IMapper Mapper) : Controller
         where Entity : class
         where RequestTO : class
         where ResponseTO : class
@@ -17,20 +19,25 @@ namespace REST.Controllers.V1_0.Common
             var authors = Service.GetAll();
 
             Logger.LogInformation("Getting all {type}", typeof(Entity));
+            Response.StatusCode = (int)HttpStatusCode.OK;
 
             return Json(authors);
         }
 
         [HttpPost]
-        public virtual async Task<JsonResult> Create([FromBody] RequestTO author)
+        public virtual async Task<JsonResult> Create([FromBody] RequestTO request)
         {
-            ResponseTO? response = null;
-            Logger.LogInformation("Creating {res}", Json(author).Value);
+            ResponseTO? response = Mapper.Map<ResponseTO>(Mapper.Map<Entity>(request));
+            Logger.LogInformation("Creating {res}", Json(request).Value);
             Response.StatusCode = (int)HttpStatusCode.Created;
 
             try
             {
-                response = await Service.Add(author);
+                response = await Service.Add(request);
+            }
+            catch (DbUpdateException)
+            {
+                Response.StatusCode = 403;
             }
             catch (Exception ex)
             {
@@ -91,6 +98,11 @@ namespace REST.Controllers.V1_0.Common
         {
             bool res = false;
             Logger.LogInformation("Deleted {type} {id}", typeof(Entity), id);
+
+            if (id == 0)
+            {
+                return Ok();
+            }
 
             try
             {

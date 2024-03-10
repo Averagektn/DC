@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using REST.Controllers.V1_0.Common;
 using REST.Entity.Db;
 using REST.Entity.DTO.RequestTO;
@@ -9,7 +10,7 @@ namespace REST.Controllers.V1_0
 {
     [Route("api/v1.0/tweets")]
     [ApiController]
-    public class TweetController(ITweetService TweetService, ILogger<TweetController> Logger)
-        : AbstractController<Tweet, TweetRequestTO, TweetResponseTO>(TweetService, Logger)
+    public class TweetController(ITweetService TweetService, ILogger<TweetController> Logger, IMapper Mapper)
+        : AbstractController<Tweet, TweetRequestTO, TweetResponseTO>(TweetService, Logger, Mapper)
     { }
 }
