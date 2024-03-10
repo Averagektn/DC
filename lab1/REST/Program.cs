@@ -9,6 +9,7 @@ using MyCoolMapper = REST.Entity.Common.AutoMapper;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddDbContext<DbStorage, PostgresDbContext>();
+new PostgresDbContext().Database.EnsureDeleted();
 builder.Services.AddControllers().AddNewtonsoftJson();
 builder.Services
     .AddScoped<IAuthorService, AuthorService>()
