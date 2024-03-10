@@ -17,20 +17,21 @@ namespace REST.Controllers.V1_0.Common
             var authors = Service.GetAll();
 
             Logger.LogInformation("Getting all {type}", typeof(Entity));
+            Response.StatusCode = (int)HttpStatusCode.OK;
 
             return Json(authors);
         }
 
         [HttpPost]
-        public virtual async Task<JsonResult> Create([FromBody] RequestTO author)
+        public virtual async Task<JsonResult> Create([FromBody] RequestTO request)
         {
             ResponseTO? response = null;
-            Logger.LogInformation("Creating {res}", Json(author).Value);
+            Logger.LogInformation("Creating {res}", Json(request).Value);
             Response.StatusCode = (int)HttpStatusCode.Created;
 
             try
             {
-                response = await Service.Add(author);
+                response = await Service.Add(request);
             }
             catch (Exception ex)
             {

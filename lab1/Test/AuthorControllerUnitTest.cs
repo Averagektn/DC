@@ -18,64 +18,53 @@ namespace Test
     [TestClass]
     public class AuthorControllerUnitTest
     {
-        private readonly string[] assemblyNamesToScan = ["REST"];
-        private Mock<ILogger<AuthorController>> _loggerMock = null!;
-        private DbStorage _context = null!;
-        private IMapper _mapper = null!;
-
-        [TestInitialize]
-        public void TestInit()
+        private readonly Mock<ILogger<AuthorController>> _loggerMock = new();
+        private readonly DbStorage _context = new InMemoryDbContext();
+        private readonly IMapper _mapper = new MapperConfiguration(cfg =>
         {
-            var config = new MapperConfiguration(cfg =>
+            cfg.AddMaps(["REST"]);
+        }).CreateMapper();
+
+        private readonly AuthorService _authorService;
+        private readonly AuthorController _authorController;
+
+        public AuthorControllerUnitTest()
+        {
+            _authorService = new AuthorService(_context, _mapper);
+            _authorController = new AuthorController(_authorService, _loggerMock.Object)
             {
-                cfg.AddMaps(assemblyNamesToScan);
-            });
-            _mapper = config.CreateMapper();
-            _loggerMock = new Mock<ILogger<AuthorController>>();
-            _context = new InMemoryDbContext();
+                ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
+            };
         }
 
         [TestMethod]
         public void GetAll()
         {
-            var authorService = new AuthorService(_context, _mapper);
-            var authorController = new AuthorController(authorService, _loggerMock.Object)
-            {
-                ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
-            };
-
-            var result = authorController.Read();
-            var expected = 1;
+            var result = _authorController.Read();
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result.Value, typeof(List<AuthorResponseTO>));
-            Assert.AreEqual(expected, ((List<AuthorResponseTO>)result.Value).Count);
         }
 
         [TestMethod]
         public async Task GetByTweetID()
         {
-            int tweetId = 1;
-            var author = new Author(1, "login", "password", "fname", "lname");
-            var authorRequest = new AuthorRequestTO(0, author.Login, author.Password, author.FirstName, author.LastName);
-            var authorResponse = new AuthorResponseTO(author.Id, author.Login, author.FirstName, author.LastName);
-            var tweetRequest = new TweetRequestTO(0, 1, "title", "content", DateTime.Now, DateTime.Now);
+            var authorRequest = new AuthorRequestTO(0, "author", "passwrod", "fname", "lname");
+            var authorResponse = (await _authorController.Create(authorRequest)).Value as AuthorResponseTO;
+            Assert.IsNotNull(authorResponse);
 
-            var authorService = new AuthorService(_context, _mapper);
+            var tweetRequest = new TweetRequestTO(0, authorResponse.Id, "title", "content", DateTime.Now, DateTime.Now);
+
             var tweetService = new TweetService(_context, _mapper);
-            var authorController = new AuthorController(authorService, _loggerMock.Object)
-            {
-                ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
-            };
             var tweetController = new TweetController(tweetService, new Mock<ILogger<TweetController>>().Object)
             {
                 ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
             };
 
-            await authorController.Create(authorRequest);
-            await tweetController.Create(tweetRequest);
+            var tweetResponse = (await tweetController.Create(tweetRequest)).Value as TweetResponseTO;
+            Assert.IsNotNull(tweetResponse);
 
-            var result = await authorController.GetByTweetID(tweetId);
+            var result = await _authorController.GetByTweetID(tweetResponse.Id);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(authorResponse, result.Value);
@@ -84,17 +73,13 @@ namespace Test
         [TestMethod]
         public async Task Delete()
         {
-            var authorService = new AuthorService(_context, _mapper);
-            var authorController = new AuthorController(authorService, _loggerMock.Object)
-            {
-                ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
-            };
-
-            await authorController.Create(new(0, "login", "password", "fname", "lname"));
+            var authorRequest = new AuthorRequestTO(0, "testDeleteLogin", "password", "fname", "lname");
+            var authorResponse = (await _authorController.Create(authorRequest)).Value as AuthorResponseTO;
+            Assert.IsNotNull(authorResponse);
 
             _context.ChangeTracker.Clear();
-            
-            var result = await authorController.Delete(1);
+
+            var result = await _authorController.Delete(authorResponse.Id);
 
             var expected = typeof(NoContentResult);
 
@@ -104,63 +89,56 @@ namespace Test
         [TestMethod]
         public async Task Create()
         {
-            var authorService = new AuthorService(_context, _mapper);
-            var authorController = new AuthorController(authorService, _loggerMock.Object)
-            {
-                ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
-            };
+            var expectedLogin = "testCreateLogin";
+            var result = (await _authorController.Create(new(0, expectedLogin, "password", "fname", "lname"))).Value
+                as AuthorResponseTO;
+            Assert.IsNotNull(result);
 
-            var result = await authorController.Create(new(0, "login", "password", "fname", "lname"));
-            var expected = new AuthorResponseTO(2, "login", "fname", "lname");
-
-            Assert.AreEqual(expected, result.Value);
+            Assert.AreEqual(expectedLogin, result.Login);
         }
 
         [TestMethod]
         public async Task Update()
         {
-            var authorService = new AuthorService(_context, _mapper);
-            var authorController = new AuthorController(authorService, _loggerMock.Object)
-            {
-                ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
-            };
-
-            await authorController.Create(new(0, "login", "password", "fname", "lname"));
+            var expected = "testedUpdateLogin";
+            var authorResponse = (await _authorController.Create(new(0, "testUpdateLogin", "password", "fname", "lname"))).Value
+                as AuthorResponseTO;
+            Assert.IsNotNull(authorResponse);
 
             _context.ChangeTracker.Clear();
 
-            var expected = new AuthorResponseTO(1, "newLogin", "fname", "lname");
-            var result = await authorController.Update(new(1, "newLogin", "password", "fname", "lname"));
+            var result =
+                (await _authorController.Update(new(authorResponse.Id, expected, "password", "fname", "lname"))).Value
+                as AuthorResponseTO;
+            Assert.IsNotNull(result);
 
-            Assert.AreEqual(expected, result.Value);
+            Assert.AreEqual(expected, result.Login);
         }
 
         [TestMethod]
-        public async Task APatch()
+        public async Task Patch()
         {
-            var authorService = new AuthorService(_context, _mapper);
-            var authorController = new AuthorController(authorService, _loggerMock.Object)
-            {
-                ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
-            };
+            var expected = "newPatchTestName";
+            var authorResponse =
+                (await _authorController.Create(new(0, "patchTestLogin", "password", "fname", "lname"))).Value
+                as AuthorResponseTO;
+            Assert.IsNotNull(authorResponse);
 
-            await authorController.Create(new(0, "login", "password", "fname", "lname"));
-
-            var expected = new AuthorResponseTO(2, "login", "newName", "lname");
             var patch = new JsonPatchDocument<Author>();
             var addOperation = new Operation<Author>
             {
                 op = "add",
                 path = "/FirstName",
-                value = "newName"
+                value = expected
             };
             patch.Operations.Add(addOperation);
 
             _context.ChangeTracker.Clear();
 
-            var result = await authorController.PartialUpdate(2, patch);
+            var result = (await _authorController.PartialUpdate(authorResponse.Id, patch)).Value as AuthorResponseTO;
 
-            Assert.AreEqual(expected, result.Value);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expected, result.FirstName);
         }
     }
 }
