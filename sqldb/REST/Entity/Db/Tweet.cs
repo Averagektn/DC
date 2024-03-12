@@ -13,14 +13,16 @@ namespace REST.Entity.Db
         public DateTime Modified { get; set; } = modified;
         public ICollection<Post> Posts { get; set; } = [];
         public ICollection<Marker> Markers { get; set; } = [];
+        public int AuthorId { get; set; }
         public Author Author { get; set; } = null!;
 
         public Tweet() : this(string.Empty, string.Empty, DateTime.Now, DateTime.Now) { }
-        public Tweet(int id, Author author, string title, string content, DateTime created, DateTime modified)
+        public Tweet(int id, int authorId, string title, string content, DateTime created, DateTime modified)
             : this(title, content, created, modified)
         {
             Id = id;
-            Author = author;
+            AuthorId = authorId;
+            Author = new() { Id = authorId };
         }
     }
 }

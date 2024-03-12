@@ -60,6 +60,7 @@ namespace REST.Storage.Common
                 entity.Property(t => t.Created).IsRequired();
                 entity.Property(t => t.Modified).IsRequired();
                 entity.Property(t => t.Title).IsRequired().HasMaxLength(64);
+                entity.Property(t => t.AuthorId).IsRequired();
 
                 entity.HasIndex(t => t.Title).IsUnique();
             });

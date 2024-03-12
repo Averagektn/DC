@@ -17,7 +17,7 @@ namespace REST.Service.Implementation
         public async Task<TweetResponseTO> Add(TweetRequestTO tweet)
         {
             var t = _mapper.Map<Tweet>(tweet);
-            var author = await _context.Authors.FindAsync(t.Author.Id) ?? throw new ArgumentNullException($"AUTHOR not found {t.Author.Id}");
+            var author = await _context.Authors.FindAsync(t.AuthorId) ?? throw new ArgumentNullException($"AUTHOR not found {t.Author.Id}");
 
             if (!Validate(t))
             {
@@ -33,12 +33,12 @@ namespace REST.Service.Implementation
 
         public IList<TweetResponseTO> GetAll()
         {
-            return _context.Tweets.Include(t => t.Author).Select(_mapper.Map<TweetResponseTO>).ToList();
+            return _context.Tweets.Select(_mapper.Map<TweetResponseTO>).ToList();
         }
 
         public async Task<TweetResponseTO> Patch(int id, JsonPatchDocument<Tweet> patch)
         {
-            var target = await _context.Tweets.Include(t => t.Author).FirstAsync(t => t.Id == id)
+            var target = await _context.Tweets.FirstAsync(t => t.Id == id)
                 ?? throw new ArgumentNullException($"TWEET {id} not found at PATCH {patch}");
 
             patch.ApplyTo(target);
@@ -80,7 +80,7 @@ namespace REST.Service.Implementation
         public async Task<TweetResponseTO> GetByID(int id)
         {
 
-            var a = await _context.Tweets.Include(t => t.Author).FirstAsync(t => t.Id == id);
+            var a = await _context.Tweets.FirstAsync(t => t.Id == id);
 
             return a is not null ? _mapper.Map<TweetResponseTO>(a)
                 : throw new ArgumentNullException($"Not found TWEET {id}");
